@@ -4,7 +4,6 @@ import "./App.css";
 
 const App = () => {
   useAppendStyleOnInsert();
-  useInjectElement();
 
   return (
     <main>
@@ -47,17 +46,6 @@ const useMutationObserver = (
 
   return observer;
 };
-
-const useInjectElement = () =>
-  React.useEffect(() => {
-    const portal = document.querySelector("#embedDiv");
-
-    const telInput = document.createElement("input");
-    telInput.type = "tel";
-    telInput.setAttribute("data-testid", "input");
-
-    portal.querySelector("input[data-testid=input]") ?? portal.append(telInput);
-  }, []);
 
 const addClass = (mutations) => {
   mutations.forEach((mutation) => {
