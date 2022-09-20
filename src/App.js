@@ -4,7 +4,6 @@ import "./App.css";
 
 const App = () => {
   useAppendStyleOnInsert();
-  useInjectElement();
 
   return (
     <main>
@@ -31,18 +30,6 @@ const useAppendStyleOnInsert = () =>
       mutations.length > 0 && callback(mutations);
       observer.disconnect();
     };
-  }, []);
-
-const useInjectElement = () =>
-  React.useEffect(() => {
-    const portal = document.getElementById("embedDiv");
-
-    const telInput = document.createElement("input");
-    telInput.type = "tel";
-    telInput.setAttribute("data-testid", "input");
-
-    !portal.querySelector("input[data-testid=input]") &&
-      portal.append(telInput);
   }, []);
 
 export default App;

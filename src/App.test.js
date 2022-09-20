@@ -4,6 +4,14 @@ import App from "./App";
 
 test("injected input has fs-exclud class", async () => {
   render(<App />);
-  const input = await screen.findByTestId("input");
-  expect(input).toHaveClass("fs-exclude");
+
+  // eslint-disable-next-line testing-library/no-node-access
+  const portal = document.getElementById("embedDiv");
+  const telInput = document.createElement("input");
+  telInput.type = "tel";
+  telInput.setAttribute("data-testid", "input");
+  portal.append(telInput);
+
+  await screen.findByTestId("input");
+  expect(telInput).toHaveClass("fs-exclude");
 });
