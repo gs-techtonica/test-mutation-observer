@@ -5,7 +5,6 @@ import "./App.css";
 const App = () => {
   const portalRef = React.useRef();
   useAppendStyleOnInsert(portalRef);
-  useInjectElement(portalRef);
 
   return (
     <main>
@@ -50,17 +49,6 @@ const useMutationObserver = (
     };
     // TODO: Wrap callback with useEvent once it's real
   }, [ref, callback, takeRecordsBeforeDisconnect, observeOptions]);
-
-const useInjectElement = (ref) =>
-  React.useEffect(() => {
-    const portal = ref.current;
-
-    const telInput = document.createElement("input");
-    telInput.type = "tel";
-    telInput.setAttribute("data-testid", "input");
-
-    portal.querySelector("input[data-testid=input]") ?? portal.append(telInput);
-  }, [ref]);
 
 const addClass = (mutations) => {
   mutations.forEach((mutation) => {
