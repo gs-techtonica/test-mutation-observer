@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
 
-function App() {
+const App = () => {
+  useAppendStyleOnInsert();
+  useInjectElement();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main>
+      <h1>Hello CodeSandbox</h1>
+      <div id="embedDiv" />
+    </main>
   );
-}
+};
+
+const useAppendStyleOnInsert = () =>
+  React.useEffect(() => {
+    const portal = document.getElementById("embedDiv");
+
+    const observer = new MutationObserver(() => {
+      const telInput = portal.querySelector("input[type=tel]");
+      telInput && telInput.classList.add("fs-exclude");
+    });
+
+    observer.observe(portal, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
+const useInjectElement = () =>
+  React.useEffect(() => {
+    const portal = document.getElementById("embedDiv");
+
+    const telInput = document.createElement("input");
+    telInput.type = "tel";
+    telInput.setAttribute("data-testid", "input");
+
+    !portal.querySelector("input[data-testid=input]") &&
+      portal.append(telInput);
+  }, []);
 
 export default App;

@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
 
-test('renders learn react link', () => {
+import App from "./App";
+
+test("injected input has fs-exclud class", async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const input = await screen.findByTestId("input");
+  expect(input).toHaveClass("fs-exclude");
 });
