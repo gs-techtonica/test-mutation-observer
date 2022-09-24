@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import "./App.css";
+
 const App = () => {
   useAppendStyleOnInsert();
   useInjectElement();
@@ -16,13 +18,19 @@ const useAppendStyleOnInsert = () =>
   React.useEffect(() => {
     const portal = document.getElementById("embedDiv");
 
-    const observer = new MutationObserver(() => {
+    const callback = () => {
       const telInput = portal.querySelector("input[type=tel]");
       telInput && telInput.classList.add("fs-exclude");
-    });
+    };
+
+    const observer = new MutationObserver(callback);
 
     observer.observe(portal, { childList: true, subtree: true });
-    return () => observer.disconnect();
+    return () => {
+      const mutations = observer.takeRecords();
+      mutations.length > 0 && callback(mutations);
+      observer.disconnect();
+    };
   }, []);
 
 const useInjectElement = () =>
