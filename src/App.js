@@ -3,39 +3,61 @@ import * as React from "react";
 import "./App.css";
 
 const App = () => {
-  useAppendStyleOnInsert();
-  useInjectElement();
+  const portalRef = React.useRef();
+  useAppendStyleOnInsert(portalRef);
+  useInjectElement(portalRef);
 
   return (
     <main>
       <h1>Hello CodeSandbox</h1>
-      <div id="embedDiv" />
+      <div id="embedDiv" ref={portalRef} />
     </main>
   );
 };
 
-const useAppendStyleOnInsert = () =>
+const useAppendStyleOnInsert = (ref) => {
+  const callback = () => {
+    const telInput = ref.current.querySelector("input[type=tel]");
+    telInput && telInput.classList.add("fs-exclude");
+  };
+  useMutationObserver(ref, callback);
+};
+
+const useMutationObserver = (
+  ref,
+  callback,
+  {
+    takeRecordsBeforeDisconnect = true,
+    observeOptions = {
+      childList: true,
+      subtree: true,
+    },
+  } = {
+    takeRecordsBeforeDisconnect: true,
+    observeOptions: {
+      childList: true,
+      subtree: true,
+    },
+  }
+) =>
   React.useEffect(() => {
-    const portal = document.getElementById("embedDiv");
-
-    const callback = () => {
-      const telInput = portal.querySelector("input[type=tel]");
-      telInput && telInput.classList.add("fs-exclude");
-    };
-
     const observer = new MutationObserver(callback);
 
-    observer.observe(portal, { childList: true, subtree: true });
+    observer.observe(ref.current, observeOptions);
+
     return () => {
-      const mutations = observer.takeRecords();
-      mutations.length > 0 && callback(mutations);
+      if (takeRecordsBeforeDisconnect) {
+        const mutations = observer.takeRecords();
+        mutations.length > 0 && callback(mutations);
+      }
       observer.disconnect();
     };
-  }, []);
+    // TODO: Wrap callback with useEvent once it's real
+  }, [ref, callback, takeRecordsBeforeDisconnect, observeOptions]);
 
-const useInjectElement = () =>
+const useInjectElement = (ref) =>
   React.useEffect(() => {
-    const portal = document.getElementById("embedDiv");
+    const portal = ref.current;
 
     const telInput = document.createElement("input");
     telInput.type = "tel";
@@ -43,6 +65,6 @@ const useInjectElement = () =>
 
     !portal.querySelector("input[data-testid=input]") &&
       portal.append(telInput);
-  }, []);
+  }, [ref]);
 
 export default App;
