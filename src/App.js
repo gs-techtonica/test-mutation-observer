@@ -16,11 +16,7 @@ const App = () => {
 };
 
 const useAppendStyleOnInsert = (ref) => {
-  const callback = () => {
-    const telInput = ref.current.querySelector("input[type=tel]");
-    telInput && telInput.classList.add("fs-exclude");
-  };
-  useMutationObserver(ref, callback);
+  useMutationObserver(ref, addClass);
 };
 
 const useMutationObserver = (
@@ -66,5 +62,12 @@ const useInjectElement = (ref) =>
     !portal.querySelector("input[data-testid=input]") &&
       portal.append(telInput);
   }, [ref]);
+
+const addClass = (mutations) => {
+  mutations.forEach((mutation) => {
+    const telInput = mutation.target.querySelector("input[type=tel]");
+    telInput && telInput.classList.add("fs-exclude");
+  });
+};
 
 export default App;
