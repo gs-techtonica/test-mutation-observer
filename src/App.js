@@ -59,8 +59,7 @@ const useInjectElement = (ref) =>
     telInput.type = "tel";
     telInput.setAttribute("data-testid", "input");
 
-    !portal.querySelector("input[data-testid=input]") &&
-      portal.append(telInput);
+    portal.querySelector("input[data-testid=input]") ?? portal.append(telInput);
   }, [ref]);
 
 const addClass = (mutations) => {
