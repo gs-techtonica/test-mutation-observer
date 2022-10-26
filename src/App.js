@@ -3,44 +3,38 @@ import * as React from "react";
 import "./App.css";
 
 const App = () => {
-  const portalRef = React.useRef();
-  useAppendStyleOnInsert(portalRef);
-  useInjectElement(portalRef);
+  useAppendStyleOnInsert();
+  useInjectElement();
 
   return (
     <main>
       <h1>Hello CodeSandbox</h1>
-      <div id="embedDiv" ref={portalRef} />
+      <div id="embedDiv" />
     </main>
   );
 };
 
-const useAppendStyleOnInsert = (ref) => {
-  useMutationObserver(ref, addClass);
+const useAppendStyleOnInsert = () => {
+  const observer = useMutationObserver(addClass);
+
+  React.useEffect(() => {
+    const portal = document.querySelector("#embedDiv");
+    observer.observe(portal, { childList: true, subtree: true });
+  }, [observer]);
 };
 
 const useMutationObserver = (
-  ref,
   callback,
-  {
-    takeRecordsBeforeDisconnect = true,
-    observeOptions = {
-      childList: true,
-      subtree: true,
-    },
-  } = {
+  { takeRecordsBeforeDisconnect = true } = {
     takeRecordsBeforeDisconnect: true,
-    observeOptions: {
-      childList: true,
-      subtree: true,
-    },
   }
-) =>
+) => {
+  const observer = React.useMemo(
+    () => new MutationObserver(callback),
+    [callback]
+  );
+
   React.useEffect(() => {
-    const observer = new MutationObserver(callback);
-
-    observer.observe(ref.current, observeOptions);
-
     return () => {
       if (takeRecordsBeforeDisconnect) {
         const mutations = observer.takeRecords();
@@ -49,18 +43,21 @@ const useMutationObserver = (
       observer.disconnect();
     };
     // TODO: Wrap callback with useEvent once it's real
-  }, [ref, callback, takeRecordsBeforeDisconnect, observeOptions]);
+  }, [observer, callback, takeRecordsBeforeDisconnect]);
 
-const useInjectElement = (ref) =>
+  return observer;
+};
+
+const useInjectElement = () =>
   React.useEffect(() => {
-    const portal = ref.current;
+    const portal = document.querySelector("#embedDiv");
 
     const telInput = document.createElement("input");
     telInput.type = "tel";
     telInput.setAttribute("data-testid", "input");
 
     portal.querySelector("input[data-testid=input]") ?? portal.append(telInput);
-  }, [ref]);
+  }, []);
 
 const addClass = (mutations) => {
   mutations.forEach((mutation) => {
